@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import sys
 
 import requests
@@ -12,60 +13,73 @@ import requests
 # is what lets tests replace requests.get and check pagination, error
 # handling, and headers without any live call or real token.
 
-def fetch_starred_repositories(username, token=None):
-    # GitHub API URL to fetch starred repositories
-    # The username goes into the path exactly as typed, with no quoting
-    # or checking. GitHub usernames only allow letters, digits, and
-    # hyphens, so a normal name is safe here. A name containing a slash
-    # would change the path and the API would answer for a different
-    # route. I rely on GitHub's own naming rules instead of checking.
-    url = f'https://api.github.com/users/{username}/starred'
-    headers = {'Accept': 'application/vnd.github+json'}
+# GitHub usernames are letters, digits, and single hyphens, 1 to 39
+# characters, and cannot start or end with a hyphen. I check the shape
+# here instead of relying on it: a name containing a slash would
+# change the API path and the API would answer for a different route.
+USERNAME_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$")
+
+# A stalled connection should not hold a hand run script open for as
+# long as the other end stalls, so every request gets this timeout.
+REQUEST_TIMEOUT = 15
+
+
+class FetchError(Exception):
+    """The API did not give a usable answer. The message is printed
+    by main, and the run exits 1, so a shell pipeline can tell a
+    failed fetch from a user who has starred nothing."""
+
+
+def fetch_starred_repositories(username, token=''):
+    """Return the full list of repositories username has starred.
+
+    Raises FetchError on a network failure, a non-200 status, or a
+    200 body that is not a JSON list of repositories. Earlier versions
+    returned whatever had been collected before a failure, so a
+    partial list printed under an error line and the run still exited
+    0; a caller could not tell complete output from a cut off one.
+    """
+    url = f"https://api.github.com/users/{username}/starred"
+    headers = {"Accept": "application/vnd.github+json"}
     if token:
         # Personal access tokens go in the Authorization header. The token
         # is read from the environment by main() and is never printed.
-        headers['Authorization'] = f'Bearer {token}'
+        headers["Authorization"] = f"Bearer {token}"
 
     repositories = []
     page = 1
     while True:
-        # I pass no timeout here, so a connection that opens and then
-        # stalls can hold this script open for as long as the other end
-        # stalls. For a script I run by hand I have accepted that. It
-        # would be the first thing to fix before running this on a
-        # schedule.
-        # On a failure partway through, I return what I already
-        # collected instead of throwing it away. The caller then prints
-        # a partial list under the failure message. I prefer that to
-        # losing the first hundred names because page two failed.
         try:
             response = requests.get(
-                url, headers=headers, params={'per_page': 100, 'page': page}
+                url,
+                headers=headers,
+                params={"per_page": 100, "page": page},
+                timeout=REQUEST_TIMEOUT,
             )
         except requests.RequestException as error:
-            print(f"Failed to fetch starred repositories: {error}")
-            return repositories
+            raise FetchError(f"Failed to fetch starred repositories: {error}") from error
         if response.status_code != 200:
-            print(f"Failed to fetch starred repositories. Status code: {response.status_code}")
-            return repositories
-        # The try above covers only the request itself. A 200 response
-        # whose body is not JSON would raise out of this json call,
-        # outside the handler, and crash the script. That hole is here
-        # and I know it is here.
-        batch = response.json()
-        # A 200 body is not always a list either. An API error body is
-        # a dict holding a message, and extending a list with a dict
-        # would add the dict keys as if they were repositories, so I
-        # stop here instead of trusting the shape.
+            raise FetchError(
+                f"Failed to fetch starred repositories. Status code: {response.status_code}"
+            )
+        try:
+            batch = response.json()
+        except ValueError as error:
+            raise FetchError(
+                "Failed to fetch starred repositories: response was not JSON"
+            ) from error
+        # A 200 body is not always a list. An API error body is a dict
+        # holding a message, and extending a list with a dict would
+        # add the dict keys as if they were repositories.
         if not isinstance(batch, list):
-            return repositories
+            raise FetchError(
+                "Failed to fetch starred repositories: response was not a list"
+            )
         repositories.extend(batch)
         # A short page is the last page. The API gives me no total
         # count to aim at, so this is the only stop signal I have. The
         # cost is one extra request that comes back empty when a user
-        # has an exact multiple of 100 starred repos. In my mocked run,
-        # 200 repos took three calls, and the third returned an empty
-        # list.
+        # has an exact multiple of 100 starred repos.
         if len(batch) < 100:
             return repositories
         page += 1
@@ -81,26 +95,20 @@ def display_repositories(repositories):
             # so the first version of this printed the word None. The
             # or form also turns an empty string description into the
             # fallback text, which is what I want on screen.
-            name = repo.get('name') or 'No name'
-            description = repo.get('description') or 'No description'
+            name = repo.get("name") or "No name"
+            description = repo.get("description") or "No description"
             # Stars get an is None test instead of or, on purpose: 0
             # stars is a real answer, and or would replace a real 0
-            # with the fallback text. My mocked run with a star count
-            # of 0 prints "Stars: 0".
-            stars = repo.get('stargazers_count')
+            # with the fallback text.
+            stars = repo.get("stargazers_count")
             if stars is None:
-                stars = 'No star count'
+                stars = "No star count"
             print(f"Repository: {name}")
             print(f"Description: {description}")
             print(f"Stars: {stars}")
-            print('-' * 40)
+            print("-" * 40)
     else:
-        # This one message covers two cases I cannot tell apart at this
-        # point: the user really has starred nothing, and the fetch
-        # failed and handed me an empty list. The fetch function prints
-        # its own status or error line before this, so the reason is
-        # already on screen above it.
-        print("No repositories found or there was an error fetching them.")
+        print("No repositories found.")
 
 
 def main(argv=None):
@@ -110,19 +118,23 @@ def main(argv=None):
     parser.add_argument("username", help="GitHub username to fetch starred repositories for")
     args = parser.parse_args(argv)
 
+    if not USERNAME_RE.match(args.username):
+        print(f"Error: {args.username!r} is not a valid GitHub username.", file=sys.stderr)
+        return 2
+
     # main is the only place that touches the environment. The fetch
     # function takes the token as a plain argument, so tests can pass a
     # dummy value or None without changing the process environment.
     # The or None turns an empty GITHUB_TOKEN into no token at all. I
     # would rather send no Authorization header than one that says
     # Bearer with nothing after it.
-    token = os.environ.get('GITHUB_TOKEN') or None
-    starred_repos = fetch_starred_repositories(args.username, token)
+    auth = os.environ.get('GITHUB_TOKEN') or ''
+    try:
+        starred_repos = fetch_starred_repositories(args.username, auth)
+    except FetchError as error:
+        print(str(error), file=sys.stderr)
+        return 1
     display_repositories(starred_repos)
-    # I return 0 even when the fetch failed and the list is empty. The
-    # printed messages are the signal for a person reading the output.
-    # Nothing about this script is built for a shell pipeline that
-    # checks exit codes.
     return 0
 
 

@@ -24,7 +24,11 @@ For example:
 python3 fetch.py octocat
 ```
 
-Running with no username, or with an unknown username, is handled without a traceback: a missing username prints the usage message, and a failed request prints the HTTP status code. Network errors are reported the same way.
+Running with no username prints the usage message and exits 2. A
+username that cannot be a GitHub username (for example one containing
+a slash) is rejected with exit 2 before any request is made. A failed
+request prints the reason to stderr and exits 1. Requests time out
+after 15 seconds instead of waiting indefinitely.
 
 Help:
 
@@ -46,7 +50,12 @@ The token is sent in the `Authorization: Bearer` header and is never printed. Do
 
 - Requests `https://api.github.com/users/<username>/starred` with `per_page=100` and follows pages until a short page comes back, so users with more than one page of starred repositories are listed in full instead of only the first page.
 - Prints one block per repository: `Repository:`, `Description:`, and `Stars:`, separated by a line of dashes.
-- If nothing is found, or the request fails, it prints "No repositories found or there was an error fetching them." after any status message.
+- If the user has starred nothing, it prints "No repositories found."
+  and exits 0. A failed fetch exits 1, so a script calling this one
+  can tell an empty list from a failed one.
+- `test_fetch.py` holds mocked tests (`python3 -m unittest`): pagination,
+  the timeout, headers, bad bodies, and the exit codes. No live call
+  or real token is used.
 
 ## Files
 

@@ -1,8 +1,16 @@
+![Intro banner](intro-banner.png)
+
 ![banner](assets/banner.png)
+
+![Animated scene](scene.svg)
 
 # Github-Starred-Fetch
 
 Fetches and lists the repositories a GitHub user has starred, using the GitHub API. For each starred repository it prints the name, the description (or "No description" when the repository has none), and the star count.
+
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
 
 ## Requirements
 
@@ -11,6 +19,10 @@ Python 3 and the `requests` package:
 ```
 pip install requests
 ```
+
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
 
 ## How to run
 
@@ -36,6 +48,10 @@ Help:
 python3 fetch.py --help
 ```
 
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
+
 ## Authentication
 
 No token is needed for public data, and no credential is written in the code. To raise the GitHub API rate limit or reach data your account may see, set a personal access token in the `GITHUB_TOKEN` environment variable:
@@ -45,6 +61,10 @@ GITHUB_TOKEN=<your token> python3 fetch.py <github-username>
 ```
 
 The token is sent in the `Authorization: Bearer` header and is never printed. Do not paste a token into `fetch.py`.
+
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
 
 ## How it works
 
@@ -57,11 +77,24 @@ The token is sent in the `Authorization: Bearer` header and is never printed. Do
   the timeout, headers, bad bodies, and the exit codes. No live call
   or real token is used.
 
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
+
 ## Files
 
 - `fetch.py`: the script. It can also be imported: `fetch_starred_repositories(username, token=None)` returns a list of repository objects, and `display_repositories(repositories)` prints them.
 - `assets/logo.png` and `assets/banner.png`: project branding.
 
+![Heading plate](plate.svg)
+
+![Major separator](separator-major.svg)
+
 ## License
 
 GPL-3.0; see `LICENSE`.
+
+![Minor separator](separator-minor.svg)
+
+> Chalkboard note: no username prints usage and exits 2; a failed request prints its reason to stderr and exits 1.
+> Chalkboard note: never paste a token into fetch.py; set GITHUB_TOKEN in the environment instead.

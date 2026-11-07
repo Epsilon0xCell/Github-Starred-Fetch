@@ -1,10 +1,12 @@
-![Intro banner](intro-banner.png)
+![Intro: the gathered stars now arranged as a clean descending row like a printed list under a curved planetarium dome, each star dimmer than the one above, the projector beam resting, deep navy dome with a soft violet rim](intro-banner.png)
 
-![banner](assets/banner.png)
+![Github-Starred-Fetch banner: a curved planetarium night dome full of scattered white stars, a gold beam from a small projector silhouette at the bottom sweeping one bright cluster into a tidy row above the horizon, soft violet nebula wash on deep navy](assets/banner.png)
 
 ![Animated scene](scene.svg)
 
 # Github-Starred-Fetch
+
+<p align="center"><img src="logo.png" alt="Github-Starred-Fetch logo: a dark navy dome disc, inside it a small constellation of white stars gathered into a neat cluster by one gold pointer beam sweeping them together, soft violet wash at the rim" width="200"></p>
 
 Fetches and lists the repositories a GitHub user has starred, using the GitHub API. For each starred repository it prints the name, the description (or "No description" when the repository has none), and the star count.
 

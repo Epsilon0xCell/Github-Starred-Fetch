@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Github-Starred-Fetch: The Kitchen Range</title>
+<title>Github-Starred-Fetch: under the planetarium dome</title>
 <style>
-@font-face{font-family:'BlackHan';src:url('fonts/BlackHanSans-Regular.ttf') format('truetype')}
-@font-face{font-family:'Barlow';src:url('fonts/Barlow-Regular.ttf') format('truetype')}
-@font-face{font-family:'Barlow';src:url('fonts/Barlow-Bold.ttf') format('truetype');font-weight:bold}
-*{box-sizing:border-box}body{margin:0;background:#1b1a19;color:#efe9d8;font-family:'Barlow',sans-serif;line-height:1.6}
-header{padding:2rem 5vw 0}header img.banner{width:100%;border-radius:8px}.logo{width:92px;height:92px;border-radius:8px}
-h1{font-family:'BlackHan',sans-serif;font-size:2rem;color:#efe9d8;letter-spacing:.01em}
-h2{font-family:'BlackHan',sans-serif;font-size:1.3rem;color:#efe9d8}
+@font-face{font-family:'Zen Dots';src:url('fonts/ZenDots-Regular.ttf') format('truetype')}
+@font-face{font-family:'Titillium Web';src:url('fonts/TitilliumWeb-Regular.ttf') format('truetype');font-weight:400}
+@font-face{font-family:'Titillium Web';src:url('fonts/TitilliumWeb-SemiBold.ttf') format('truetype');font-weight:600}
+@font-face{font-family:'Titillium Web';src:url('fonts/TitilliumWeb-Bold.ttf') format('truetype');font-weight:700}
+*{box-sizing:border-box}body{margin:0;background:#070d24;color:#eef1ff;font-family:'Titillium Web',sans-serif;line-height:1.6}
+header{padding:2rem 5vw 0}header img.banner{width:100%;border-radius:10px;border:2px solid #3a4480;box-shadow:0 0 34px rgba(112,92,220,.35)}
+.logo{width:92px;height:92px;border-radius:50%;border:2px solid #e8b64c;background:#0a1230}
+h1{font-family:'Zen Dots',sans-serif;font-weight:400;font-size:1.65rem;color:#ffffff;letter-spacing:.02em;line-height:1.5}
+h2{font-family:'Zen Dots',sans-serif;font-weight:400;font-size:1.1rem;color:#cfc6ff;line-height:1.6}
 nav.hobs{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.1rem 0}
-a.hob{font-family:'BlackHan',sans-serif;text-decoration:none;color:#141312;background:#efe9d8;border:5px solid #0c0b0a;border-radius:50%;width:104px;height:104px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.82rem;box-shadow:0 0 0 3px #6b655a;transition:all .25s}
-a.hob:hover{box-shadow:0 0 0 3px #e88a24,0 0 18px #e88a24}
-a.hob:active{transform:translateY(4px);box-shadow:0 0 0 3px #6b655a}
-a{color:#efe9d8}a.chalk::before{content:'\2605  ';color:#e8c84a}
+a.hob{font-family:'Zen Dots',sans-serif;text-decoration:none;color:#0a1230;background:radial-gradient(circle at 50% 38%,#fdfdff,#c9d2f5 72%);border:3px solid #e8b64c;border-radius:50%;width:104px;height:104px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.68rem;line-height:1.5;box-shadow:0 0 0 3px #3a4480;transition:all .25s}
+a.hob:hover{box-shadow:0 0 0 3px #e8b64c,0 0 20px rgba(232,182,76,.65)}
+a.hob:active{transform:translateY(4px);box-shadow:0 0 0 3px #3a4480}
+a{color:#a9f}a.chalk{color:#eef1ff}a.chalk::before{content:'°5  ';color:#e8b64c}
 main{padding:0 5vw 3rem;max-width:1180px;margin:0 auto}
 .rangetop{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 @media(max-width:760px){.rangetop{grid-template-columns:1fr}}
-.tin{background:#efe9d8;color:#1b1a19;border-radius:10px;padding:1.1rem 1.3rem;border-top:10px solid #b8b0a0}
-.tin .qty{text-align:right;font-variant-numeric:tabular-nums}
-pre.code{background:#0c0b0a;color:#efe9d8;padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.88rem}
-.rail{border:none;height:10px;background:#0c0b0a;margin:2rem 0;position:relative}
-.slate{background:#23272b;border:2px solid #4a4f55;border-radius:6px;padding:.9rem 1.1rem;margin:1rem 0}
-.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}.shots img{width:100%;border-radius:6px}
-footer{padding:1.4rem 5vw;color:#a49a86}
+.tin{background:#101a3d;color:#eef1ff;border-radius:10px;padding:1.1rem 1.3rem;border:1px solid #3a4480;border-top:4px solid #8a7bd8}
+.tin .qty{text-align:right;font-variant-numeric:tabular-nums;color:#e8b64c;font-weight:600}
+pre.code{background:#04081a;color:#dfe6ff;padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.88rem;border:1px solid #3a4480;border-left:5px solid #e8b64c}
+.rail{border:none;height:3px;background:linear-gradient(90deg,transparent,#8a7bd8,#e8b64c,#8a7bd8,transparent);margin:2rem 0;position:relative}
+.slate{background:#0b1434;border:2px solid #3a4480;border-radius:6px;padding:.9rem 1.1rem;margin:1rem 0}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}.shots img{width:100%;border-radius:6px;border:1px solid #3a4480;background:#0a1230}
+footer{padding:1.4rem 5vw;color:#8d97c4;border-top:1px solid #3a4480}
 </style></head><body>
-<header><img class="logo" src="assets/logo.png" alt="Kettle logo"><img class="banner" src="assets/banner.png" alt="">
+<header><img class="logo" src="assets/logo.png" alt="Github-Starred-Fetch logo: a dark navy dome disc, inside it a small constellation of white stars gathered into a neat cluster by one gold pointer beam sweeping them together, soft violet wash at the rim"><img class="banner" src="assets/banner.png" alt="A curved planetarium night dome full of scattered white stars, a gold beam from a small projector silhouette at the bottom sweeping one bright cluster into a tidy row above the horizon, violet nebula wash, deep navy ground">
 <h1>Github-Starred-Fetch</h1>
 <p><a class="chalk" href="https://github.com/Epsilon0xCell/Github-Starred-Fetch">github.com/Epsilon0xCell/Github-Starred-Fetch</a></p>
 <nav class="hobs"><a class="hob" href="#run">Run it</a><a class="hob" href="#files">The files</a><a class="hob" href="#sheets">The sheets</a><a class="hob" href="https://github.com/Epsilon0xCell/Github-Starred-Fetch">The repo</a></nav>
